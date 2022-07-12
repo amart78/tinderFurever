@@ -31,12 +31,12 @@ fetch('https://api.petfinder.com/v2/oauth2/token', {
 })
 
 
-
-let allPets;
+let allPets = {};
+let pet = undefined
 
 function renderPetCards(petId){
     
-    const pet = allPets[petId];
+    pet = allPets[petId];
 
     //pet name
     const name = document.querySelector('.name')
@@ -64,8 +64,9 @@ function renderPetCards(petId){
 
         image.replaceWith(petImage)
     }
-    //location 
-    // - need to rename to ASL
+
+    //general info- age,sex,location 
+
     const ASL = document.querySelector('#pet-ASL')
     const petASL = document.createElement('span')
     petASL.id = 'pet-ASL'
@@ -79,7 +80,8 @@ function renderPetCards(petId){
 
  //Heart & No buttons (click events to show next pet)
 document.querySelector('.heart').addEventListener('click', function (e) {
-    renderPetCards(Math.floor(Math.random() * (allPets.length-1) ))
+    renderMatchCard()
+    renderPetCards(Math.floor(Math.random() * (allPets.length-1) )) //match
 });
 
 document.querySelector('.no').addEventListener('click', function (e) {
@@ -91,7 +93,8 @@ document.addEventListener('keydown', function(e) {
     const key = e.key;
     switch (key) {
         case 'ArrowRight':
-            renderPetCards(Math.floor(Math.random() * (allPets.length-1) ) ); 
+            renderMatchCard()
+            renderPetCards(Math.floor(Math.random() * (allPets.length-1) ) ); //match
             break;
         case 'ArrowLeft':
                 renderPetCards(Math.floor(Math.random() * (allPets.length-1) ) );
@@ -132,3 +135,61 @@ document.querySelector('.info').addEventListener('mouseover', function() {
 document.querySelector('.info').addEventListener('mouseleave', function() {
     document.querySelector('.infoOverlay').style.display = 'none';
 });
+
+
+function renderMatchCard (){
+
+    const matches = document.querySelector('.matches')
+    
+    const matchCard = document.createElement('div')
+    matchCard.className = "messages"
+    matches.appendChild(matchCard)
+
+    // avatar img
+    const div = document.createElement('div')
+    div.className = "avatar"
+    matchCard.appendChild(div)
+
+    const petImage = document.createElement('img')
+
+    console.log(pet.photos[0])
+
+    if (pet.photos[0] && pet.photos[0].full) {
+        petImage.src = pet.photos[0].full
+       
+
+    } else {
+        petImage.src = 'https://scalebranding.com/wp-content/uploads/2021/05/Fire-Paw-Logo.jpg'
+    }
+    div.appendChild(petImage)
+
+    // right side of match card
+    const messageDiv = document.createElement('div')
+    messageDiv.className = "message"
+
+    matchCard.appendChild(messageDiv)
+
+    // name
+    const userDiv = document.createElement('div')
+    userDiv.className = "user"
+
+    messageDiv.appendChild(userDiv)
+
+    const matchName = document.createElement('div')
+    matchName.textContent = pet.name
+
+    userDiv.appendChild(matchName)
+
+    // info
+    const textDiv = document.createElement('div')
+    textDiv.className = "text"
+
+    messageDiv.appendChild(textDiv)
+
+    const matchInfo = document.createElement('div')
+    matchInfo.textContent = `${pet.contact.address.city}, ${pet.contact.address.state} |${pet.age} | ${pet.gender}`
+
+    textDiv.appendChild(matchInfo)
+
+}
+
